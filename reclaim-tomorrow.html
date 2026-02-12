@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reclaim Tomorrow - Progressive Resource Library</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a472a;
+            --accent: #e63946;
+            --light-bg: #f8f9fa;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --text-light: #636e72;
+            --border: #dfe6e9;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-hover: rgba(0, 0, 0, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--light-bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #2d5a3d 100%);
+            color: white;
+            padding: 60px 20px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0.03) 70%, transparent 70%),
+                linear-gradient(-45deg, transparent 30%, rgba(255,255,255,0.03) 30%, rgba(255,255,255,0.03) 70%, transparent 70%);
+            background-size: 60px 60px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        header .container {
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -0.02em;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .tagline {
+            font-size: clamp(1.1rem, 2vw, 1.4rem);
+            opacity: 0.95;
+            font-weight: 400;
+            animation: fadeInUp 0.8s ease 0.2s backwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .controls-section {
+            background: white;
+            margin-top: -40px;
+            position: relative;
+            z-index: 10;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px var(--shadow);
+            padding: 30px;
+            animation: fadeInUp 0.8s ease 0.4s backwards;
+        }
+
+        .search-bar {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 16px 50px 16px 20px;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: 'Work Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(26, 71, 42, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            pointer-events: none;
+        }
+
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 15px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .view-toggle button {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 6px;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .view-toggle button.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .view-toggle button:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .results-info {
+            padding: 20px 0;
+            color: var(--text-light);
+            font-size: 15px;
+        }
+
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+
+        .resources-list {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 60px;
+        }
+
+        .resources-list.active {
+            display: flex;
+        }
+
+        .resources-grid.inactive {
+            display: none;
+        }
+
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px var(--shadow-hover);
+        }
+
+        .resource-card.list-view {
+            flex-direction: row;
+            align-items: center;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--primary), #2d5a3d);
+            color: white;
+            padding: 20px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+        }
+
+        .resource-card.list-view .card-header {
+            min-height: unset;
+            padding: 15px 20px;
+            min-width: 180px;
+            flex-shrink: 0;
+        }
+
+        .topic-badge {
+            position: relative;
+            z-index: 1;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex-grow: 1;
+        }
+
+        .resource-card.list-view .card-body {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .resource-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text);
+            line-height: 1.4;
+        }
+
+        .resource-card.list-view .resource-title {
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .resource-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+        }
+
+        .resource-card.list-view .resource-meta {
+            margin-bottom: 0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .resource-description {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .resource-card.list-view .resource-description {
+            display: none;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .tag {
+            background: var(--light-bg);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .resource-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-family: 'Work Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            background: #d62839;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(230, 57, 70, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--text);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: var(--text);
+        }
+
+        footer {
+            background: var(--primary);
+            color: white;
+            padding: 40px 20px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        footer p {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            header {
+                padding: 40px 20px 60px;
+            }
+
+            .controls-section {
+                padding: 20px;
+                margin-top: -30px;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                min-width: 100%;
+            }
+
+            .resources-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .resource-card.list-view {
+                flex-direction: column;
+            }
+
+            .resource-card.list-view .card-header {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .resource-card.list-view .card-body {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .resource-card.list-view .resource-title {
+                font-size: 18px;
+                margin-bottom: 10px;
+            }
+
+            .resource-card.list-view .resource-meta {
+                margin-bottom: 15px;
+            }
+
+            .resource-card.list-view .resource-description {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Reclaim Tomorrow</h1>
+            <p class="tagline">A comprehensive resource library for progressive advocacy and education.</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="controls-section">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search resources by title, description, or tags...">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+            </div>
+
+            <div class="filter-controls">
+                <div class="filter-group">
+                    <label for="topicFilter">Topic</label>
+                    <select id="topicFilter">
+                        <option value="all">All Topics</option>
+                        <option value="abortion">Abortion Rights</option>
+                        <option value="climate">Climate & Environment</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="education">Education</option>
+                        <option value="economy">Economy & Labor</option>
+                        <option value="guns">Gun Rights and Gun Violence</option>
+                        <option value="lgbtq">LGBTQ+ Rights</option>
+                        <option value="justice">Criminal Justice</option>
+                        <option value="voting">Voting Rights</option>
+                        <option value="housing">Housing</option>
+                        <option value="immigration">Immigration</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="typeFilter">Document Type</label>
+                    <select id="typeFilter">
+                        <option value="all">All Types</option>
+                        <option value="report">Research Report</option>
+                        <option value="factsheet">Fact Sheet</option>
+                        <option value="bibliography">Bibliography</option>
+                        <option value="policy">Policy Brief</option>
+                        <option value="data">Data Analysis</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="sortFilter">Sort By</label>
+                    <select id="sortFilter">
+                        <option value="recent">Most Recent</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="title">Title A-Z</option>
+                        <option value="topic">Topic</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="view-toggle">
+                <button id="gridViewBtn" class="active">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Grid View
+                </button>
+                <button id="listViewBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                    </svg>
+                    List View
+                </button>
+            </div>
+        </div>
+
+        <div class="results-info">
+            <p id="resultsCount">Showing all resources</p>
+        </div>
+
+        <div class="resources-grid" id="resourcesGrid">
+            <!-- Resources will be populated by JavaScript -->
+        </div>
+
+        <div class="resources-list" id="resourcesList">
+            <!-- List view resources -->
+        </div>
+
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-state-icon">📚</div>
+            <h3>No resources found</h3>
+            <p>Try adjusting your search or filters</p>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Reclaim Tomorrow. Building a progressive future through informed advocacy.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sample data structure - replace with your actual resources
+        const resources = [
+            {
+                id: 1,
+                title: "Consciousness Citations: A Curated Resource for Abortion Rights Advocacy",
+                topic: "abortion",
+                type: "bibliography",
+                date: "2024-01-15",
+                description: "An in-depth examination of consciousness and its implications for abortion rights advocacy.",
+                tags: ["consciousness", "abortion", "advocacy"],
+                pdfUrl: "resources/Consciousness Citations.docx"
+            },
+            {
+                id: 2,
+                title: "Gun Violence in the United States",
+                topic: "guns",
+                type: "bibliography",
+                date: "2024-01-20",
+                description: "Comprehensive bibliography of research on gun violence, policy impacts, and prevention strategies in the United States.",
+                tags: ["gun violence", "research", "policy", "gun rights", "gun control", "second amendment"],
+                pdfUrl: "resources/Gun Violence in the United States Citations.docx"
+            },
+            {
+                id: 3,
+                title: "Immigration in the United States: A Research Bibliography",
+                topic: "immigration",
+                type: "bibliography",
+                date: "2024-02-01",
+                description: "Curated bibliography of research on immigration policy, border security, and integration challenges.",
+                tags: ["immigration", "policy", "border security", "integration"],
+                pdfUrl: "resources/Immigration in the United States.docx"
+            },
+            {
+                id: 4,
+                title: "LGBTQ+ Rights and Justice: A Bibliography",
+                topic: "lgbtq",
+                type: "bibliography",
+                date: "2024-02-05",
+                description: "Key statistics and arguments supporting LGBTQ+ rights and justice advocacy.",
+                tags: ["lgbtq", "rights", "justice"],
+                pdfUrl: "resources/LGBT Citations.docx"
+            },
+            {
+                id: 5,
+                title: "Transgender Rights: A Research Bibliography",
+                topic: "lgbtq",
+                type: "bibliography",
+                date: "2024-01-28",
+                description: "Comprehensive bibliography of research and policy analysis on transgender rights and advocacy.",
+                tags: ["transgender", "rights", "policy"],
+                pdfUrl: "resources/transgender-rights.pdf"
+            },
+            {
+                id: 6,
+                title: "Transgender Participation in Sports: A Research Bibliography",
+                topic: "lgbtq",
+                type: "bibliography",
+                date: "2024-02-10",
+                description: "Comprehensive bibliography of research and policy analysis on transgender participation in sports.",
+                tags: ["transgender", "sports", "data"],
+                pdfUrl: "resources/Transgender Participation in Sports Citations_.docx"
+            },
+            {
+                id: 7,
+                title: "Vaccines and Public Health Policy: A Research Bibliography",
+                topic: "healthcare",
+                type: "bibliography",
+                date: "2024-01-18",
+                description: "Comprehensive bibliography of research and policy analysis on vaccines and public health.",
+                tags: ["vaccines", "public health", "policy"],
+                pdfUrl: "resources/Vaccines.docx"
+            },
+        ];
+
+        // State management
+        let currentView = 'grid';
+        let filteredResources = [...resources];
+
+        // Topic labels
+        const topicLabels = {
+            abortion: "Abortion Rights",
+            climate: "Climate & Environment",
+            healthcare: "Healthcare",
+            lgbtq: "LGBTQ+ Rights",
+            education: "Education",
+            economy: "Economy & Labor",
+            guns: "Gun Rights and Gun Violence",
+            justice: "Criminal Justice",
+            voting: "Voting Rights",
+            housing: "Housing",
+            immigration: "Immigration"
+        };
+
+        // Type labels
+        const typeLabels = {
+            report: "Research Report",
+            factsheet: "Fact Sheet",
+            bibliography: "Bibliography",
+            policy: "Policy Brief",
+            data: "Data Analysis"
+        };
+
+        // Initialize
+        function init() {
+            renderResources();
+            attachEventListeners();
+        }
+
+        // Attach event listeners
+        function attachEventListeners() {
+            document.getElementById('searchInput').addEventListener('input', filterResources);
+            document.getElementById('topicFilter').addEventListener('change', filterResources);
+            document.getElementById('typeFilter').addEventListener('change', filterResources);
+            document.getElementById('sortFilter').addEventListener('change', filterResources);
+            document.getElementById('gridViewBtn').addEventListener('click', () => switchView('grid'));
+            document.getElementById('listViewBtn').addEventListener('click', () => switchView('list'));
+        }
+
+        // Filter resources
+        function filterResources() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const topicFilter = document.getElementById('topicFilter').value;
+            const typeFilter = document.getElementById('typeFilter').value;
+
+            filteredResources = resources.filter(resource => {
+                const matchesSearch = 
+                    resource.title.toLowerCase().includes(searchTerm) ||
+                    resource.description.toLowerCase().includes(searchTerm) ||
+                    resource.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+
+                const matchesTopic = topicFilter === 'all' || resource.topic === topicFilter;
+                const matchesType = typeFilter === 'all' || resource.type === typeFilter;
+
+                return matchesSearch && matchesTopic && matchesType;
+            });
+
+            sortResources();
+            renderResources();
+            updateResultsCount();
+        }
+
+        // Sort resources
+        function sortResources() {
+            const sortBy = document.getElementById('sortFilter').value;
+
+            switch(sortBy) {
+                case 'recent':
+                    filteredResources.sort((a, b) => new Date(b.date) - new Date(a.date));
+                    break;
+                case 'oldest':
+                    filteredResources.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    break;
+                case 'title':
+                    filteredResources.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'topic':
+                    filteredResources.sort((a, b) => a.topic.localeCompare(b.topic));
+                    break;
+            }
+        }
+
+        // Render resources
+        function renderResources() {
+            const gridContainer = document.getElementById('resourcesGrid');
+            const listContainer = document.getElementById('resourcesList');
+            const emptyState = document.getElementById('emptyState');
+
+            if (filteredResources.length === 0) {
+                gridContainer.innerHTML = '';
+                listContainer.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+
+            const gridHTML = filteredResources.map(resource => createResourceCard(resource, false)).join('');
+            const listHTML = filteredResources.map(resource => createResourceCard(resource, true)).join('');
+
+            gridContainer.innerHTML = gridHTML;
+            listContainer.innerHTML = listHTML;
+        }
+
+        // Create resource card
+        function createResourceCard(resource, isListView) {
+            const formattedDate = new Date(resource.date).toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric' 
+            });
+
+            return `
+                <div class="resource-card ${isListView ? 'list-view' : ''}">
+                    <div class="card-header">
+                        <div class="topic-badge">${topicLabels[resource.topic]}</div>
+                    </div>
+                    <div class="card-body">
+                        <div>
+                            <h3 class="resource-title">${resource.title}</h3>
+                            <div class="resource-meta">
+                                <span class="meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    ${formattedDate}
+                                </span>
+                                <span class="meta-item">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                        <polyline points="14 2 14 8 20 8"></polyline>
+                                    </svg>
+                                    ${typeLabels[resource.type]}
+                                </span>
+                            </div>
+                            <p class="resource-description">${resource.description}</p>
+                            <div class="tags">
+                                ${resource.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                            </div>
+                        </div>
+                        <div class="resource-actions">
+                            <a href="${resource.pdfUrl}" target="_blank" class="btn btn-primary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Download
+                            </a>
+                            <a href="${resource.pdfUrl}" target="_blank" class="btn btn-secondary">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                View
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Switch view
+        function switchView(view) {
+            currentView = view;
+            const gridBtn = document.getElementById('gridViewBtn');
+            const listBtn = document.getElementById('listViewBtn');
+            const gridContainer = document.getElementById('resourcesGrid');
+            const listContainer = document.getElementById('resourcesList');
+
+            if (view === 'grid') {
+                gridBtn.classList.add('active');
+                listBtn.classList.remove('active');
+                gridContainer.classList.remove('inactive');
+                listContainer.classList.remove('active');
+            } else {
+                listBtn.classList.add('active');
+                gridBtn.classList.remove('active');
+                gridContainer.classList.add('inactive');
+                listContainer.classList.add('active');
+            }
+        }
+
+        // Update results count
+        function updateResultsCount() {
+            const count = filteredResources.length;
+            const total = resources.length;
+            const resultsText = count === total 
+                ? `Showing all ${total} resources`
+                : `Showing ${count} of ${total} resources`;
+            
+            document.getElementById('resultsCount').textContent = resultsText;
+        }
+
+        // Initialize on load
+        init();
+    </script>
+</body>
+</html>
